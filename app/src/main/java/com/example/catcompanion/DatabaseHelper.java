@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     // database name
-    static final String DATABASE_NAME = "USMAN_DB";
+    static final String DATABASE_NAME = "Ron_DB";
     // dabatase version
     static final int DATABASE_VERSION = 1;
     //name of the table

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Settings">
+
+    <RadioGroup
+        android:id="@+id/radioGroupCategories"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radioWorld"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="World" />
+
+        <RadioButton
+            android:id="@+id/radioBusiness"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Business" />
+
+        <RadioButton
+            android:id="@+id/radioTechnology"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Technology" />
+
+        <RadioButton
+            android:id="@+id/radioSports"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sports" />
+
+        <RadioButton
+            android:id="@+id/radioEntertainment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Entertainment" />
+
+        <Button
+            android:id="@+id/buttonSavePreferences"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Save Preferences"
+            android:onClick="SavePref" />
+
+    </RadioGroup>
+
+</LinearLayout>
