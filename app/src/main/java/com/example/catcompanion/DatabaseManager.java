@@ -1,4 +1,4 @@
-package com.example.sqlitedatabaseexample;
+package com.example.catcompanion;
 
 import android.content.ContentValues;
 import android.content.Context;

@@ -1,4 +1,4 @@
-package com.example.sqlitedatabaseexample;
+package com.example.catcompanion;
 
 import org.junit.Test;
 

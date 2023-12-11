@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.sqlitedatabaseexample'
+    namespace 'com.example.catcompanion'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.sqlitedatabaseexample"
+        applicationId "com.example.catcompanion"
         minSdk 24
         targetSdk 34
         versionCode 1
