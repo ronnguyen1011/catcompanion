@@ -91,8 +91,8 @@ public class MainActivity extends AppCompatActivity {
                     if (buttonID == R.id.weight_tracker) {
 
                     } else if (buttonID == R.id.cat_walk) {
-//                        Intent intent = new Intent(MainActivity.this, MapsActivity.class);
-//                        startActivity(intent);
+                        Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                        startActivity(intent);
                     }
                 }
 
