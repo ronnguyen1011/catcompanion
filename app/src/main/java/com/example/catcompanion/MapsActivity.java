@@ -105,7 +105,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 LatLng latLng = new LatLng(latitude, longitude);
                 mMap.addMarker(new MarkerOptions().position(latLng).title(locationTitle));
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10));
 
                 cursor.moveToNext();
             }

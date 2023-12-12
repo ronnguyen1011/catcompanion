@@ -1,10 +1,14 @@
 package com.example.catcompanion;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +20,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Planner extends AppCompatActivity {
     private ArrayAdapter<String> itemAdapter;
@@ -84,6 +97,14 @@ public class Planner extends AppCompatActivity {
             }
         });
 
+        // Set up a TimerTask to check for matching times periodically
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                checkAndSendNotifications();
+            }
+        }, 0, 1000 * 60);  // Check every minute (adjust the interval as needed)
     }
 
     // Fetch tasks from the database and populate the ListView
@@ -99,16 +120,17 @@ public class Planner extends AppCompatActivity {
         // Populate the ArrayLists with retrieved data
         if (cursor != null && cursor.moveToFirst()) {
             do {
+                // Suppress lint warning for the following lines
                 @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_NAME));
                 @SuppressLint("Range") String time = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_TIME));
 
                 itemList.add(name);
                 itemTimeList.add(time);
+
             } while (cursor.moveToNext());
 
             cursor.close();
         }
-
 
         dbManager.close();
 
@@ -147,5 +169,70 @@ public class Planner extends AppCompatActivity {
         );
 
         timePickerDialog.show();
+    }
+
+    private void checkAndSendNotifications() {
+        Calendar currentTime = Calendar.getInstance();
+
+        for (int i = 0; i < itemTimeList.size(); i++) {
+            String itemTime = itemTimeList.get(i);
+
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+                Date taskTime = sdf.parse(itemTime);
+
+                Calendar taskCalendar = Calendar.getInstance();
+                taskCalendar.setTime(taskTime);
+
+                // Check if the current time matches any time in itemTimeList
+                if (isSameTime(currentTime, taskCalendar)) {
+                    String itemName = itemList.get(i);
+                    showNotification("Task Reminder", "It's time for '" + itemName + "'!");
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private boolean isSameTime(Calendar time1, Calendar time2) {
+        return time1.get(Calendar.HOUR_OF_DAY) == time2.get(Calendar.HOUR_OF_DAY)
+                && time1.get(Calendar.MINUTE) == time2.get(Calendar.MINUTE);
+    }
+
+    private void showNotification(String title, String content) {
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        String channelId = "MyChannelId";
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "MyChannel",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        Intent intent = new Intent(Planner.this, Planner.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                Planner.this,
+                0,
+                intent,
+                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(Planner.this, channelId)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle(title)
+                .setContentText(content)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        notificationManager.notify(1, builder.build());
     }
 }
