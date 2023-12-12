@@ -20,6 +20,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     static final String COLUMN_LONGITUDE = "longitude";
     static final String COLUMN_LOCATION_TITLE = "location_title";
 
+    static final String DATABASE_TABLE2 = "Task";
+    static final String COLUMN_ID2 = "ID";
+    static final String COLUMN_NAME = "name";
+    static final String COLUMN_TIME = "time";
     DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -29,10 +33,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("CREATE TABLE " + DATABASE_TABLE + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_LATITUDE + " REAL NOT NULL, " + COLUMN_LONGITUDE + " REAL NOT NULL, " +
                 COLUMN_LOCATION_TITLE + " TEXT NOT NULL)");
+
+        // Create the Task table
+        sqLiteDatabase.execSQL("CREATE TABLE " + DATABASE_TABLE2 + " ("
+                + COLUMN_ID2 + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + COLUMN_NAME + " TEXT NOT NULL, "
+                + COLUMN_TIME + " TEXT NOT NULL)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DATABASE_TABLE2);
     }
 }

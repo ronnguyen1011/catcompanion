@@ -73,6 +73,18 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         SharedPreferences sharedPreferences = getSharedPreferences("Categories", MODE_PRIVATE);
+        String welcomeMessage = "Welcome to CatCompanion!\n\n" +
+                "🐾 Embrace the Purr-fect Experience 🐾\n\n" +
+                "Dear Cat Enthusiast,\n\n" +
+                "We're thrilled to welcome you to CatCompanion, the ultimate mobile app designed exclusively for cat lovers like you! Get ready to embark on a delightful journey that strengthens the extraordinary bond between you and your feline companions.\n\n" +
+                "🎉 What CatCompanion Offers:\n" +
+                "- Playtime Planning: Plan fun and interactive play sessions to keep your cat entertained and happy.\n" +
+                "- Nutrition Guidance: Discover expert advice on providing the best nutrition for your furry friends.\n" +
+                "- Cat-Friendly Map: Explore a map filled with cat-friendly locations, because your cat deserves the best!\n\n" +
+                "Get ready to dive into a world where the happiness of your cat takes center stage. Let's make every moment with your feline friend special and memorable.\n\n" +
+                "Paws and whiskers,\nThe CatCompanion Team";
+
+        textView.setText(welcomeMessage);
 
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -88,8 +100,9 @@ public class MainActivity extends AppCompatActivity {
                     toggleDarkMode();
                     return true;
                 } else {
-                    if (buttonID == R.id.weight_tracker) {
-
+                    if (buttonID == R.id.planner) {
+                        Intent intent = new Intent(MainActivity.this, Planner.class);
+                        startActivity(intent);
                     } else if (buttonID == R.id.cat_walk) {
                         Intent intent = new Intent(MainActivity.this, MapsActivity.class);
                         startActivity(intent);

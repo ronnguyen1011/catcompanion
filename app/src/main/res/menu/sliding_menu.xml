@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/weight_tracker"
-            android:title="Weight Traacker" />
+            android:id="@+id/planner"
+            android:title="Cat Planner" />
         <item
             android:id="@+id/cat_walk"
-            android:title="Cat Location" />
+            android:title="Cat Friendly-Location" />
 
     </group>
     <item android:title=""/>

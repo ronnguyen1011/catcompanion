@@ -50,5 +50,28 @@ public class DatabaseManager {
         }
         return cursor;
     }
+
+    public void insertTask(String name, String time) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DatabaseHelper.COLUMN_NAME, name);
+        contentValues.put(DatabaseHelper.COLUMN_TIME, time);
+
+        database.insert(DatabaseHelper.DATABASE_TABLE2, null, contentValues);
+    }
+
+    public Cursor fetchTasks() {
+        String[] columns = new String[]{DatabaseHelper.COLUMN_ID2, DatabaseHelper.COLUMN_NAME, DatabaseHelper.COLUMN_TIME};
+
+        return database.query(
+                DatabaseHelper.DATABASE_TABLE2,
+                columns,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
 }
 
