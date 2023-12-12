@@ -2,7 +2,9 @@ package com.example.catcompanion;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +25,7 @@ public class Planner extends AppCompatActivity {
     private Button addButton;
     private ListView listView;
     private ArrayList<String> itemList = new ArrayList<>();
-    private ArrayList<String> itemTimeList = new ArrayList<>();  // Add time data
+    private ArrayList<String> itemTimeList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,9 @@ public class Planner extends AppCompatActivity {
 
         listView.setAdapter(itemAdapter);
 
+        // Fetch tasks from the database and populate the ListView
+        fetchTasks();
+
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,13 +68,52 @@ public class Planner extends AppCompatActivity {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                // Remove the item from the list when long-pressed
+                // Remove the item from the list and the database when long-pressed
+                String nameToRemove = itemList.get(position);
                 itemList.remove(position);
                 itemTimeList.remove(position);
                 itemAdapter.notifyDataSetChanged();
+
+                // Remove from the database
+                DatabaseManager dbManager = new DatabaseManager(Planner.this);
+                dbManager.open();
+                dbManager.removeTask(nameToRemove);
+                dbManager.close();
+
                 return true;
             }
         });
+
+    }
+
+    // Fetch tasks from the database and populate the ListView
+    private void fetchTasks() {
+        itemList.clear();
+        itemTimeList.clear();
+
+        // Retrieve tasks from the database
+        DatabaseManager dbManager = new DatabaseManager(this);
+        dbManager.open();
+        Cursor cursor = dbManager.fetchTasks();
+
+        // Populate the ArrayLists with retrieved data
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_NAME));
+                @SuppressLint("Range") String time = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_TIME));
+
+                itemList.add(name);
+                itemTimeList.add(time);
+            } while (cursor.moveToNext());
+
+            cursor.close();
+        }
+
+
+        dbManager.close();
+
+        // Notify the adapter that the data has changed
+        itemAdapter.notifyDataSetChanged();
     }
 
     private void showTimePickerDialog(final String newItem) {

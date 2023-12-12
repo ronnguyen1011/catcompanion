@@ -73,5 +73,12 @@ public class DatabaseManager {
         );
     }
 
+    public void removeTask(String name) {
+        String whereClause = DatabaseHelper.COLUMN_NAME + "=?";
+        String[] whereArgs = {name};
+
+        database.delete(DatabaseHelper.DATABASE_TABLE2, whereClause, whereArgs);
+    }
+
 }
 
