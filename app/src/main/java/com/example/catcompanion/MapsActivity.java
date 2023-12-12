@@ -2,6 +2,8 @@ package com.example.catcompanion;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.annotation.SuppressLint;
+import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -22,9 +24,10 @@ import java.util.List;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    SupportMapFragment mapFragment;
-    SearchView searchView;
+    private SupportMapFragment mapFragment;
+    private SearchView searchView;
     private ActivityMapsBinding binding;
+    private DatabaseManager dbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +36,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // Initialize DatabaseManager
+        dbManager = new DatabaseManager(this);
+
         searchView = findViewById(R.id.searchView);
-        mapFragment = (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+
+        // Set up the map
+        mapFragment.getMapAsync(this);
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -52,7 +62,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             // Add marker to the map
                             mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5));
+
+                            // Insert marker information into the database
+                            dbManager.open();
+                            dbManager.insert(address.getLatitude(), address.getLongitude(), location);
+                            dbManager.close();
 
                         } else {
                             showToast("Location not found");
@@ -73,27 +88,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return false;
             }
         });
-
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        // Retrieve marker information from the database and display on the map
+        dbManager.open();
+        Cursor cursor = dbManager.fetch();
+        if (cursor != null) {
+            while (!cursor.isAfterLast()) {
+                @SuppressLint("Range") double latitude = cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.COLUMN_LATITUDE));
+                @SuppressLint("Range") double longitude = cursor.getDouble(cursor.getColumnIndex(DatabaseHelper.COLUMN_LONGITUDE));
+                @SuppressLint("Range") String locationTitle = cursor.getString(cursor.getColumnIndex(DatabaseHelper.COLUMN_LOCATION_TITLE));
+
+                LatLng latLng = new LatLng(latitude, longitude);
+                mMap.addMarker(new MarkerOptions().position(latLng).title(locationTitle));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5));
+
+                cursor.moveToNext();
+            }
+        }
+
+        dbManager.close();
     }
+
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
