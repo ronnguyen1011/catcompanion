@@ -1,3 +1,5 @@
+// DatabaseManager.java
+
 package com.example.catcompanion;
 
 import android.content.ContentValues;
@@ -8,58 +10,45 @@ import android.widget.Toast;
 
 public class DatabaseManager {
 
-    // fields
+    // Fields
     private DatabaseHelper dbHelper;
     private Context context;
     private SQLiteDatabase database;
 
-    // constructor
-    DatabaseManager (Context context){
+    // Constructor
+    DatabaseManager(Context context) {
         this.context = context;
     }
 
-    public DatabaseManager open(){
+    public DatabaseManager open() {
         dbHelper = new DatabaseHelper(context);
         database = dbHelper.getWritableDatabase();
         return this;
     }
 
-    public void close(){
+    public void close() {
         dbHelper.close();
     }
 
-    public void insert(String name, String email){
+    // Insert method with latitude, longitude, and location title
+    public void insert(double latitude, double longitude, String locationTitle) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DatabaseHelper.COLUMN_NAME, name);
-        contentValues.put(DatabaseHelper.COLUMN_EMAIL, email);
-        database.insert(DatabaseHelper.DATABASE_TABLE,null, contentValues);
+        contentValues.put(DatabaseHelper.COLUMN_LATITUDE, latitude);
+        contentValues.put(DatabaseHelper.COLUMN_LONGITUDE, longitude);
+        contentValues.put(DatabaseHelper.COLUMN_LOCATION_TITLE, locationTitle);
+        database.insert(DatabaseHelper.DATABASE_TABLE, null, contentValues);
         Toast.makeText(context, "Inserted into database", Toast.LENGTH_LONG).show();
-
     }
 
-    public Cursor fetch(){
-        String[] columns = new String[]{DatabaseHelper.COLUMN_ID,DatabaseHelper.COLUMN_NAME,DatabaseHelper.COLUMN_EMAIL};
-        //Select id,name,email from student;
-        Cursor cursor = database.query(DatabaseHelper.DATABASE_TABLE, columns, null,null, null,null,null);
-        if(cursor != null){
+    // Fetch method
+    public Cursor fetch() {
+        String[] columns = new String[]{DatabaseHelper.COLUMN_ID, DatabaseHelper.COLUMN_LATITUDE, DatabaseHelper.COLUMN_LONGITUDE, DatabaseHelper.COLUMN_LOCATION_TITLE};
+        Cursor cursor = database.query(DatabaseHelper.DATABASE_TABLE, columns, null, null, null, null, null);
+
+        if (cursor != null) {
             cursor.moveToFirst();
         }
         return cursor;
     }
-
-    public void update(int id, String name,String email){
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DatabaseHelper.COLUMN_NAME, name);
-        contentValues.put(DatabaseHelper.COLUMN_EMAIL, email);
-        //ID = 3
-        database.update(DatabaseHelper.DATABASE_TABLE, contentValues,DatabaseHelper.COLUMN_ID+"="+id,null);
-        Toast.makeText(context, "Update  database, ID = "+id, Toast.LENGTH_LONG).show();
-
-    }
-    public void delete(int id){
-        database.delete(DatabaseHelper.DATABASE_TABLE, DatabaseHelper.COLUMN_ID+"="+id,null);
-        Toast.makeText(context, "Deleted row from database, ID = "+id, Toast.LENGTH_LONG).show();
-    }
-
-
 }
+

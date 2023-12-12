@@ -46,12 +46,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        dbManager = new DatabaseManager(this);
-        dbManager.open();
+//        dbManager = new DatabaseManager(this);
+//        dbManager.open();
 
-        dbManager.insert("Cat Food A", "Gain Weight");
-        dbManager.insert("Cat Food B", "Maintain Balance");
-        dbManager.insert("Cat Food C", "Lose Weight");
+//        dbManager.insert("Cat Food A", "Gain Weight");
+//        dbManager.insert("Cat Food B", "Maintain Balance");
+//        dbManager.insert("Cat Food C", "Lose Weight");
 
         SharedPreferences darkModePreference = getPreferences(MODE_PRIVATE);
         boolean isDarkModeEnabled = darkModePreference.getBoolean(DARK_MODE_PREF, false);
